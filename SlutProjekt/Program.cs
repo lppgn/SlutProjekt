@@ -86,6 +86,7 @@ namespace SlutProjekt
                 while (shot == false){
                 Console.Clear();
                     Console.WriteLine("Enemy Board");
+                    //printar grafik för egna brädet och motståndarens
                     for (int Y = 0; Y < 8; Y++)
                     {
                         for (int X = 0; X < 8; X++)
