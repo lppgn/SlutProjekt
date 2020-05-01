@@ -18,6 +18,116 @@ namespace SlutProjekt
             //enemy array
             bool[,] enemyArray = new bool[8, 8];
             //array values
+            createArray(ownshotArray, enemyShotArray, ownArray, enemyArray);
+
+            //generate ships
+            generateShip(ownArray, enemyArray);
+            Console.WriteLine();
+            //get own shot location
+            bool shot = false;
+            int ownHits = 0;
+            int enemyHits = 0;
+            Console.WriteLine("Use keyboard arrows to choose where to shoot and enter to shoot");
+            Console.ReadLine();
+            //gameloop
+            while (ownHits < 4 && enemyHits < 4)
+            {
+                int currentY = 0;
+                int currentX = 0;
+                //own loop
+                while (shot == false)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Enemy Board");
+                    //printar grafik för egna brädet och motståndarens
+                    DrawEnemyBoard(ownshotArray, enemyArray, currentY, currentX);
+                    DrawOwnBoard(enemyShotArray, ownArray);
+                    //läser av vart du är och vart du skjuter
+                    ConsoleKeyInfo validKeys = Console.ReadKey(true);
+                    if (validKeys.Key == ConsoleKey.DownArrow)
+                    {
+                        if (currentY < 7)
+                        {
+                            currentY++;
+                        }
+                        else
+                        {
+                            currentY = 0;
+                        }
+                    }
+                    else if (validKeys.Key == ConsoleKey.UpArrow)
+                    {
+                        if (currentY > 0)
+                        {
+                            currentY--;
+                        }
+                        else
+                        {
+                            currentY = 7;
+                        }
+                    }
+                    else if (validKeys.Key == ConsoleKey.LeftArrow)
+                    {
+                        if (currentX > 0)
+                        {
+                            currentX--;
+                        }
+                        else
+                        {
+                            currentX = 7;
+                        }
+                    }
+                    else if (validKeys.Key == ConsoleKey.RightArrow)
+                    {
+                        if (currentX < 7)
+                        {
+                            currentX++;
+                        }
+                        else
+                        {
+                            currentX = 0;
+                        }
+                    }
+                    else if (validKeys.Key == ConsoleKey.Enter && ownshotArray[currentX, currentY] == false)
+                    {
+                        ownshotArray[currentX, currentY] = true;
+                        shot = true;
+                        if (enemyArray[currentX, currentY] == true)
+                        {
+                            ownHits++;
+                        }
+                    }
+                }
+                //generate enemy shot location 
+                Random shotGenerator = new Random();
+                while (shot == true)
+                {
+                    currentX = shotGenerator.Next(0, 8);
+                    currentY = shotGenerator.Next(0, 8);
+                    if (enemyShotArray[currentX, currentY] == false)
+                    {
+                        enemyShotArray[currentX, currentY] = true;
+                        shot = false;
+                        if (ownArray[currentX, currentY] == true)
+                        {
+                            enemyHits++;
+                        }
+                    }
+                }
+            }
+            if (ownHits == 4)
+            {
+                Console.WriteLine("You win!");
+            }
+            else if (enemyHits == 4)
+            {
+                Console.WriteLine("You lost :(");
+            }
+            Console.ReadLine();
+        }
+
+        private static void createArray(bool[,] ownshotArray, bool[,] enemyShotArray, bool[,] ownArray, bool[,] enemyArray)
+        {
             for (int Y = 0; Y < 8; Y++)
             {
                 for (int X = 0; X < 8; X++)
@@ -28,8 +138,10 @@ namespace SlutProjekt
                     enemyShotArray[X, Y] = false;
                 }
             }
+        }
 
-            //generate ships
+        private static void generateShip(bool[,] ownArray, bool[,] enemyArray)
+        {
             int loopInt = 0;
             int[] shipLocationArray = new int[16];
             Random shipLocation = new Random();
@@ -63,247 +175,158 @@ namespace SlutProjekt
                         {
                             enemyArray[shipLocationArray[i], shipLocationArray[i + 1]] = true;
                         }
-                        if(i == 15)
+                        if (i == 15)
                         {
                             loopInt++;
                         }
                     }
                 }
             }
-            Console.WriteLine();
-            //get own shot location
-            bool shot = false;
-            int ownHits = 0;
-            int enemyHits = 0;
-            Console.WriteLine("Use keyboard arrows to choose where to shoot and enter to shoot");
-            Console.ReadLine();
-            //gameloop
-            while (ownHits<4 && enemyHits < 4)
-            {
-                int y = 0;
-                int x = 0;
-                //own loop
-                while (shot == false){
-                Console.Clear();
-                    Console.WriteLine("Enemy Board");
-                    //printar grafik för egna brädet och motståndarens
-                    for (int Y = 0; Y < 8; Y++)
-                    {
-                        for (int X = 0; X < 8; X++)
-                        {
-                            if(X == x && X == 7 && y == Y && ownshotArray[X,Y] == true && enemyArray[X,Y] == true)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Green;
-                                Console.BackgroundColor = ConsoleColor.Yellow;
-                                Console.WriteLine("X");
-                                Console.ResetColor();
-                            }
-                            else if (X == x && X == 7 && y == Y && ownshotArray[X, Y] == true && enemyArray[X,Y] == false)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Console.BackgroundColor = ConsoleColor.Yellow;
-                                Console.WriteLine("X");
-                                Console.ResetColor();
-                            }
-                            else if (X == x && X != 7 && y == Y && ownshotArray[X, Y] == true && enemyArray[X, Y] == true)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Green;
-                                Console.BackgroundColor = ConsoleColor.Yellow;
-                                Console.Write("X");
-                                Console.ResetColor();
-                                Console.Write(" ");
-                            }
-                            else if (X == x && X != 7 && y == Y && ownshotArray[X, Y] == true && enemyArray[X, Y] == false)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Console.BackgroundColor = ConsoleColor.Yellow;
-                                Console.Write("X");
-                                Console.ResetColor();
-                                Console.Write(" ");
-                            }
-                            else if(X == x && X == 7 && y == Y)
-                            {
-                                Console.BackgroundColor = ConsoleColor.Yellow;
-                                Console.ForegroundColor = ConsoleColor.Black;
-                                Console.WriteLine("X");
-                                Console.ResetColor();
-                            }
-                            else if(X == x && X != 7 && y == Y)
-                            {
-                                Console.BackgroundColor = ConsoleColor.Yellow;
-                                Console.ForegroundColor = ConsoleColor.Black;
-                                Console.Write("X");
-                                Console.ResetColor();
-                                Console.Write(" ");
-                            }
-                            else if (X == 7 && ownshotArray[X, Y] == true && enemyArray[X, Y] == true)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Green;
-                                Console.WriteLine("X");
-                                Console.ResetColor();
-                            }
-                            else if (X != 7 && ownshotArray[X, Y] == true && enemyArray[X, Y] == false)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Console.Write("0 ");
-                                Console.ResetColor();
-                            }
-                            else if (X == 7 && ownshotArray[X, Y] == true && enemyArray[X, Y] == false)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine("0");
-                                Console.ResetColor();
-                            }
-                            else if (X != 7 && ownshotArray[X, Y] == true && enemyArray[X, Y] == true)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Green;
-                                Console.Write("X ");
-                                Console.ResetColor();
-                            }
-                            else if(X == 7)
-                            {
-                                Console.WriteLine("0 ");
-                            }
-                            else
-                            {
-                                Console.Write("0 ");
-                            }
-                        }
-                    }
-                    Console.WriteLine();
-                    Console.WriteLine("Your board");
-                    for (int Y = 0; Y < 8; Y++)
-                    {
-                        for (int X = 0; X < 8; X++)
-                        {
-                            if (X == 7 && enemyShotArray[X, Y] == true && ownArray[X, Y] == true)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine("X");
-                                Console.ResetColor();
-                            }
-                            else if (X == 7 && enemyShotArray[X, Y] == false && ownArray[X, Y] == true)
-                            {
-                                Console.ForegroundColor = ConsoleColor.DarkYellow;
-                                Console.WriteLine("X");
-                                Console.ResetColor();
-                            }
-                            else if (X != 7 && enemyShotArray[X, Y] == true && ownArray[X, Y] == true)
-                            {
-                                Console.ForegroundColor = ConsoleColor.DarkYellow;
-                                Console.Write("X ");
-                                Console.ResetColor();
-                            }
-                            else if (X != 7 && enemyShotArray[X, Y] == false && ownArray[X, Y] == true)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Green;
-                                Console.Write("X ");
-                                Console.ResetColor();
-                            }
-                            else if (X != 7 && enemyShotArray[X, Y] == true && ownArray[X, Y] == false)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Console.Write("0 ");
-                                Console.ResetColor();
-                            }
-                            else if (X == 7 && enemyShotArray[X, Y] == true && ownArray[X, Y] == false)
-                            {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine("0");
-                                Console.ResetColor();
-                            }
-                            else if (X != 7 && enemyShotArray[X, Y] == false && ownArray[X, Y] == false)
-                            {
-                                Console.Write("0 ");
-                            }
-                            else if (X == 7 && enemyShotArray[X, Y] == false && ownArray[X, Y] == false)
-                            {
-                                Console.WriteLine("0");
-                            }
-                        }
-                    }
-                    ConsoleKeyInfo validKeys = Console.ReadKey(true);
-                if(validKeys.Key == ConsoleKey.DownArrow)
-                {
-                        if(y < 7)
-                        {
-                            y++;
-                        }
-                        else
-                        {
-                            y = 0;
-                        }
-                }
-                else if(validKeys.Key == ConsoleKey.UpArrow)
-                {
-                        if (y > 0)
-                        {
-                            y--;
-                        }
-                        else
-                        {
-                            y = 7;
-                        }
-                    }
-                else if(validKeys.Key == ConsoleKey.LeftArrow)
-                {
-                        if (x > 0)
-                        {
-                            x--;
-                        }
-                        else
-                        {
-                            x = 7;
-                        }
-                }
-                else if(validKeys.Key == ConsoleKey.RightArrow)
-                {
-                        if (x < 7)
-                        {
-                            x++;
-                        }
-                        else
-                        {
-                            x = 0;
-                        }
-                }
-                else if(validKeys.Key == ConsoleKey.Enter && ownshotArray[x,y] == false)
-                {
-                    ownshotArray[x, y] = true;
-                    shot = true;
-                        if (enemyArray[x, y] == true)
-                        {
-                            ownHits++;
-                        }
-                    }
-            }
-                //generate enemy shot location 
-                Random shotGenerator = new Random();
-                while(shot == true)
-                {
-                    x = shotGenerator.Next(0, 8);
-                    y = shotGenerator.Next(0, 8);
-                    if (enemyShotArray[x,y] == false)
-                    {
-                        enemyShotArray[x, y] = true;
-                        shot = false;
-                        if(ownArray[x, y] == true)
-                        {
-                            enemyHits++;
-                        }
-                    }
-                }
-            }
-            if(ownHits == 4)
-            {
-                Console.WriteLine("You win!");
-            }
-            else if(enemyHits == 4)
-            {
-                Console.WriteLine("You lost :(");
-            }
-            Console.ReadLine();
         }
+
+        private static void DrawEnemyBoard(bool[,] ownshotArray, bool[,] enemyArray, int currentY, int currentX)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                for (int x = 0; x < 8; x++)
+                {
+                    if (x == currentX && x == 7 && currentY == y && ownshotArray[x, y] == true && enemyArray[x, y] == true)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.BackgroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("X");
+                        Console.ResetColor();
+                    }
+                    else if (x == currentX && x == 7 && currentY == y && ownshotArray[x, y] == true && enemyArray[x, y] == false)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.BackgroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("X");
+                        Console.ResetColor();
+                    }
+                    else if (x == currentX && x != 7 && currentY == y && ownshotArray[x, y] == true && enemyArray[x, y] == true)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.BackgroundColor = ConsoleColor.Yellow;
+                        Console.Write("X");
+                        Console.ResetColor();
+                        Console.Write(" ");
+                    }
+                    else if (x == currentX && x != 7 && currentY == y && ownshotArray[x, y] == true && enemyArray[x, y] == false)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.BackgroundColor = ConsoleColor.Yellow;
+                        Console.Write("X");
+                        Console.ResetColor();
+                        Console.Write(" ");
+                    }
+                    else if (x == currentX && x == 7 && currentY == y)
+                    {
+                        Console.BackgroundColor = ConsoleColor.Yellow;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.WriteLine("X");
+                        Console.ResetColor();
+                    }
+                    else if (x == currentX && x != 7 && currentY == y)
+                    {
+                        Console.BackgroundColor = ConsoleColor.Yellow;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.Write("X");
+                        Console.ResetColor();
+                        Console.Write(" ");
+                    }
+                    else if (x == 7 && ownshotArray[x, y] == true && enemyArray[x, y] == true)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("X");
+                        Console.ResetColor();
+                    }
+                    else if (x != 7 && ownshotArray[x, y] == true && enemyArray[x, y] == false)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write("0 ");
+                        Console.ResetColor();
+                    }
+                    else if (x == 7 && ownshotArray[x, y] == true && enemyArray[x, y] == false)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("0");
+                        Console.ResetColor();
+                    }
+                    else if (x != 7 && ownshotArray[x, y] == true && enemyArray[x, y] == true)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write("X ");
+                        Console.ResetColor();
+                    }
+                    else if (x == 7)
+                    {
+                        Console.WriteLine("0 ");
+                    }
+                    else
+                    {
+                        Console.Write("0 ");
+                    }
+                }
+            }
+            Console.WriteLine();
+            Console.WriteLine("Your board");
+        }
+
+        private static void DrawOwnBoard(bool[,] enemyShotArray, bool[,] ownArray)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                for (int x = 0; x < 8; x++)
+                {
+                    if (x == 7 && enemyShotArray[x, y] == true && ownArray[x, y] == true)
+                    {
+                        Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        Console.WriteLine("X");
+                        Console.ResetColor();
+                    }
+                    else if (x == 7 && enemyShotArray[x, y] == false && ownArray[x, y] == true)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("X");
+                        Console.ResetColor();
+                    }
+                    else if (x != 7 && enemyShotArray[x, y] == true && ownArray[x, y] == true)
+                    {
+                        Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        Console.Write("X ");
+                        Console.ResetColor();
+                    }
+                    else if (x != 7 && enemyShotArray[x, y] == false && ownArray[x, y] == true)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write("X ");
+                        Console.ResetColor();
+                    }
+                    else if (x != 7 && enemyShotArray[x, y] == true && ownArray[x, y] == false)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write("0 ");
+                        Console.ResetColor();
+                    }
+                    else if (x == 7 && enemyShotArray[x, y] == true && ownArray[x, y] == false)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("0");
+                        Console.ResetColor();
+                    }
+                    else if (x != 7 && enemyShotArray[x, y] == false && ownArray[x, y] == false)
+                    {
+                        Console.Write("0 ");
+                    }
+                    else if (x == 7 && enemyShotArray[x, y] == false && ownArray[x, y] == false)
+                    {
+                        Console.WriteLine("0");
+                    }
+                }
+            }
+        }
+
         //metod för att endast göra saker på jämna tal i min for loop
         public static bool Even(int value)
         {
